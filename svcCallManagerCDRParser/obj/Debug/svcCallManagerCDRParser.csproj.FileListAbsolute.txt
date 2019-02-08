@@ -1,0 +1,7 @@
+C:\VS\services\svcCallManagerCDRParser\svcCallManagerCDRParser\bin\Debug\svcCallManagerCDRParser.exe.config
+C:\VS\services\svcCallManagerCDRParser\svcCallManagerCDRParser\bin\Debug\svcCallManagerCDRParser.exe
+C:\VS\services\svcCallManagerCDRParser\svcCallManagerCDRParser\bin\Debug\svcCallManagerCDRParser.pdb
+C:\VS\services\svcCallManagerCDRParser\svcCallManagerCDRParser\obj\Debug\svcCallManagerCDRParser.csprojAssemblyReference.cache
+C:\VS\services\svcCallManagerCDRParser\svcCallManagerCDRParser\obj\Debug\svcCallManagerCDRParser.csproj.CoreCompileInputs.cache
+C:\VS\services\svcCallManagerCDRParser\svcCallManagerCDRParser\obj\Debug\svcCallManagerCDRParser.exe
+C:\VS\services\svcCallManagerCDRParser\svcCallManagerCDRParser\obj\Debug\svcCallManagerCDRParser.pdb
