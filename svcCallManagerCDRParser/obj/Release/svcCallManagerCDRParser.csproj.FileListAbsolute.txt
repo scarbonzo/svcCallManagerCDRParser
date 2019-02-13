@@ -1,0 +1,12 @@
+C:\VS\services\svcCallManagerCDRParser\svcCallManagerCDRParser\obj\Release\svcCallManagerCDRParser.csprojAssemblyReference.cache
+C:\VS\services\svcCallManagerCDRParser\svcCallManagerCDRParser\obj\Release\svcCallManagerCDRParser.csproj.CoreCompileInputs.cache
+C:\VS\services\svcCallManagerCDRParser\svcCallManagerCDRParser\bin\Release\svcCallManagerCDRParser.exe.config
+C:\VS\services\svcCallManagerCDRParser\svcCallManagerCDRParser\bin\Release\svcCallManagerCDRParser.exe
+C:\VS\services\svcCallManagerCDRParser\svcCallManagerCDRParser\bin\Release\svcCallManagerCDRParser.pdb
+C:\VS\services\svcCallManagerCDRParser\svcCallManagerCDRParser\bin\Release\EntityFramework.dll
+C:\VS\services\svcCallManagerCDRParser\svcCallManagerCDRParser\bin\Release\EntityFramework.SqlServer.dll
+C:\VS\services\svcCallManagerCDRParser\svcCallManagerCDRParser\bin\Release\EntityFramework.xml
+C:\VS\services\svcCallManagerCDRParser\svcCallManagerCDRParser\bin\Release\EntityFramework.SqlServer.xml
+C:\VS\services\svcCallManagerCDRParser\svcCallManagerCDRParser\obj\Release\svcCallManagerCDRParser.csproj.CopyComplete
+C:\VS\services\svcCallManagerCDRParser\svcCallManagerCDRParser\obj\Release\svcCallManagerCDRParser.exe
+C:\VS\services\svcCallManagerCDRParser\svcCallManagerCDRParser\obj\Release\svcCallManagerCDRParser.pdb

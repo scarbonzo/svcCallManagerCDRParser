@@ -1,9 +1,10 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 public class Call
 {
     //Supplemental Fields
-    public Guid Id { get; set; }
     public int Year { get; set; }
     public int Month { get; set; }
     public int Day { get; set; }
@@ -12,6 +13,8 @@ public class Call
     public DayOfWeek DayOfWeek { get; set; }
 
     //Native CDR Fields
+    [Key]
+    public string pkid { get; set; }
     public string cdrRecordType { get; set; }
     public string globalCallID_callManagerId { get; set; }
     public string globalCallID_callId { get; set; }
@@ -20,9 +23,14 @@ public class Call
     public string origNodeId { get; set; }
     public string origSpan { get; set; }
     public string origIpAddr { get; set; }
+    [Index]
+    [Index("Unique", IsUnique = true, Order = 1)]
+    [MaxLength(64)]
     public string callingPartyNumber { get; set; }
     public string callingPartyUnicodeLoginUserID { get; set; }
     public string origCause_location { get; set; }
+    [Index]
+    [MaxLength(64)]
     public string origCause_value { get; set; }
     public string origPrecedenceLevel { get; set; }
     public string origMediaTransportAddress_IP { get; set; }
@@ -41,10 +49,18 @@ public class Call
     public string destNodeId { get; set; }
     public string destSpan { get; set; }
     public string destIpAddr { get; set; }
+    [Index]
+    [Index("Unique", IsUnique = true, Order = 2)]
+    [MaxLength(64)]
     public string originalCalledPartyNumber { get; set; }
+    [Index]
+    [Index("Unique", IsUnique = true, Order = 3)]
+    [MaxLength(64)]
     public string finalCalledPartyNumber { get; set; }
     public string finalCalledPartyUnicodeLoginUserID { get; set; }
     public string destCause_location { get; set; }
+    [Index]
+    [MaxLength(64)]
     public string destCause_value { get; set; }
     public string destPrecedenceLevel { get; set; }
     public string destMediaTransportAddress_IP { get; set; }
@@ -60,15 +76,19 @@ public class Call
     public string destRSVPAudioStat { get; set; }
     public string destRSVPVideoStat { get; set; }
     public string dateTimeConnect { get; set; }
+    [Index("Unique", IsUnique = true, Order = 4)]
     public DateTime dateTimeDisconnect { get; set; }
     public string lastRedirectDn { get; set; }
-    public string pkid { get; set; }
     public string originalCalledPartyNumberPartition { get; set; }
     public string callingPartyNumberPartition { get; set; }
     public string finalCalledPartyNumberPartition { get; set; }
     public string lastRedirectDnPartition { get; set; }
     public string duration { get; set; }
+    [Index]
+    [MaxLength(64)]
     public string origDeviceName { get; set; }
+    [Index]
+    [MaxLength(64)]
     public string destDeviceName { get; set; }
     public string origCallTerminationOnBehalfOf { get; set; }
     public string destCallTerminationOnBehalfOf { get; set; }

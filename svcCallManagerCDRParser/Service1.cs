@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Data.Entity.Migrations;
 using System.IO;
 using System.Linq;
 using System.ServiceProcess;
@@ -12,7 +14,7 @@ public partial class Service1 : ServiceBase
     private int scanInterval = 120 * 60000;
 
     //Service Specific Stuff
-    private static string SourceCDRFolder = @"\\lsnjmonitor\cdr\Processed\";
+    private static string SourceCDRFolder = @"\\lsnjmonitor\cdr\old\processed";
     private static string ArchiveCDRFolder = @"\\lsnjmonitor\cdr\Archive\";
 
     public Service1()
@@ -66,6 +68,8 @@ public partial class Service1 : ServiceBase
 
         foreach (var cdrFile in cdrFiles)
         {
+            var calls = new List<Call>();
+
             try
             {
                 //Get the file info to check the creation date
@@ -84,15 +88,24 @@ public partial class Service1 : ServiceBase
 
                         if (fields.Length == 129)
                         {
+                            //Create a call from the fields
                             var call = CreateCallFrom129Fields(fields);
-                            WriteCallToDB(call);
+
+                            //Add the call to the List<> of calls
+                            calls.Add(call);
                         }
                         else if (fields.Length == 94)
                         {
+                            //Create a call from the fields
                             var call = CreateCallFrom94Fields(fields);
-                            WriteCallToDB(call);
+
+                            //Add the call to the List<> of calls
+                            calls.Add(call);
                         }
                     }
+
+                    //Write the calls to the database
+                    WriteCallsToDB(calls);
                 }
 
                 //Archive Process
@@ -117,7 +130,6 @@ public partial class Service1 : ServiceBase
         //Create a Call object from the fields, using the dt above for dateTimeDisconnect
         var call = new Call
         {
-            Id = Guid.NewGuid(),
             cdrRecordType = fields[0].ToLower().ToString(),
             globalCallID_callManagerId = fields[1].ToLower().ToString(),
             globalCallID_callId = fields[2].ToLower().ToString(),
@@ -266,7 +278,6 @@ public partial class Service1 : ServiceBase
         //Create a Call object from the fields, using the dt above for dateTimeDisconnect
         var call = new Call
         {
-            Id = Guid.NewGuid(),
             cdrRecordType = fields[0].ToLower().ToString(),
             globalCallID_callManagerId = fields[1].ToLower().ToString(),
             globalCallID_callId = fields[2].ToLower().ToString(),
@@ -376,9 +387,38 @@ public partial class Service1 : ServiceBase
     {
         try
         {
-            
+            using (var db = new CallSQLContext())
+            {
+                var existing = db.Calls.FirstOrDefault(c => c.pkid == call.pkid);
+
+                if (existing == null)
+                {
+                    db.Calls.Add(call);
+                    db.SaveChanges();
+                }
+            }
+        }
+        catch (Exception e) { Console.WriteLine(e); }
+    }
+
+    private static void WriteCallsToDB(List<Call> calls)
+    {
+        try
+        {
+            using (var db = new CallSQLContext())
+            {
+                foreach (var call in calls)
+                {
+                    var existing = db.Calls.FirstOrDefault(c => c.dateTimeDisconnect == call.dateTimeDisconnect && c.callingPartyNumber == call.callingPartyNumber && c.originalCalledPartyNumber == call.originalCalledPartyNumber && c.finalCalledPartyNumber == call.finalCalledPartyNumber);
+
+                    if (existing == null)
+                    {
+                        db.Calls.AddOrUpdate(call);
+                        db.SaveChanges();
+                    }
+                }
+            }
         }
         catch (Exception e) { Console.WriteLine(e); }
     }
 }
-
