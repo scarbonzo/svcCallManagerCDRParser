@@ -10,12 +10,13 @@ public partial class Service1 : ServiceBase
     //The main timer
     private System.Timers.Timer m_mainTimer;
 
-    //How often to run the routine in milliseconds (minutes * 60000)
-    private int scanInterval = 120 * 60000;
+    //How often to run the routine in milliseconds (seconds * 1000)
+    private int scanInterval = 10 * 1000;
 
     //Service Specific Stuff
-    private static string SourceCDRFolder = @"\\lsnjmonitor\cdr\old\processed";
+    private static string SourceCDRFolder = @"\\lsnjmonitor\cdr\";
     private static string ArchiveCDRFolder = @"\\lsnjmonitor\cdr\Archive\";
+    private static string ExceptionCDRFolder = @"\\lsnjmonitor\cdr\Exceptions\";
 
     public Service1()
     {
@@ -64,7 +65,7 @@ public partial class Service1 : ServiceBase
     {
         Console.Beep(2000, 1000);
 
-        var cdrFiles = Directory.EnumerateFiles(SourceCDRFolder, "cdr_*", SearchOption.AllDirectories);
+        var cdrFiles = Directory.EnumerateFiles(SourceCDRFolder, "cdr_*", SearchOption.TopDirectoryOnly);
 
         foreach (var cdrFile in cdrFiles)
         {
@@ -104,17 +105,25 @@ public partial class Service1 : ServiceBase
                         }
                     }
 
-                    //Write the calls to the database
-                    WriteCallsToDB(calls);
-                }
+                    //Archive Process
+                    var FilePath = info.DirectoryName;
+                    var FileName = info.Name;
 
-                //Archive Process
-                var FilePath = info.DirectoryName;
-                var FileName = info.Name;
-                var archiveFolder = ArchiveCDRFolder + info.CreationTime.Year.ToString() + "-" + info.CreationTime.Month.ToString() + "-" + info.CreationTime.Day.ToString() + @"\";
-                var archiveFile = archiveFolder + FileName;
-                Directory.CreateDirectory(archiveFolder);
-                File.Move(cdrFile, archiveFile);
+                    if (WriteCallsToDB(calls))
+                    {
+                        var archiveFolder = ArchiveCDRFolder + info.CreationTime.Year.ToString() + "-" + info.CreationTime.Month.ToString() + "-" + info.CreationTime.Day.ToString() + @"\";
+                        var archiveFile = archiveFolder + FileName;
+                        Directory.CreateDirectory(archiveFolder);
+                        File.Move(cdrFile, archiveFile);
+                    }
+                    else
+                    {
+                        var exceptionFolder = ExceptionCDRFolder + info.CreationTime.Year.ToString() + "-" + info.CreationTime.Month.ToString() + "-" + info.CreationTime.Day.ToString() + @"\";
+                        var exceptionFile = exceptionFolder + FileName;
+                        Directory.CreateDirectory(exceptionFolder);
+                        File.Move(cdrFile, exceptionFile);
+                    }
+                }
             }
             catch (Exception e) { Console.WriteLine(e); }
         }
@@ -401,7 +410,7 @@ public partial class Service1 : ServiceBase
         catch (Exception e) { Console.WriteLine(e); }
     }
 
-    private static void WriteCallsToDB(List<Call> calls)
+    private static bool WriteCallsToDB(List<Call> calls)
     {
         try
         {
@@ -417,8 +426,15 @@ public partial class Service1 : ServiceBase
                         db.SaveChanges();
                     }
                 }
+
+                return true;
             }
         }
-        catch (Exception e) { Console.WriteLine(e); }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            File.AppendAllText(SourceCDRFolder + "errors.log", e.ToString());
+            return false;
+        }
     }
 }
