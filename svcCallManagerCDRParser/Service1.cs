@@ -16,6 +16,7 @@ public partial class Service1 : ServiceBase
     //Service Specific Stuff
     private static string SourceCDRFolder = @"\\lsnjmonitor\cdr\";
     private static string ArchiveCDRFolder = @"\\lsnjmonitor\cdr\Archive\";
+    private static string ArchiveCMRFolder = @"\\lsnjmonitor\cdr\CMRArchive\";
     private static string ExceptionCDRFolder = @"\\lsnjmonitor\cdr\Exceptions\";
 
     public Service1()
@@ -127,6 +128,8 @@ public partial class Service1 : ServiceBase
             }
             catch (Exception e) { Console.WriteLine(e); }
         }
+
+        ArchiveCMRFiles(SourceCDRFolder, ArchiveCMRFolder);
 
         Console.Beep(4000, 1000);
     }
@@ -436,5 +439,39 @@ public partial class Service1 : ServiceBase
             File.AppendAllText(SourceCDRFolder + "errors.log", e.ToString());
             return false;
         }
+    }
+
+    private static bool ArchiveCMRFiles(string SourcePath, string DestinationPath)
+    {
+
+        var cmrFiles = Directory.EnumerateFiles(SourcePath, "cmr_*", SearchOption.TopDirectoryOnly);
+
+        foreach (var cmrFile in cmrFiles)
+        {
+            MoveFile(cmrFile, DestinationPath);
+        }
+
+        return false;
+    }
+
+    private static bool MoveFile(string FileName, string FolderPath)
+    {
+        try
+        {
+            //Get the file info to check the creation date
+            var info = new FileInfo(FileName);
+
+            var Path = info.DirectoryName;
+            var Name = info.Name;
+
+            var destinationFolder = FolderPath + info.CreationTime.Year.ToString() + "-" + info.CreationTime.Month.ToString() + "-" + info.CreationTime.Day.ToString() + @"\";
+            var destinationFile = destinationFolder + Name;
+            Directory.CreateDirectory(destinationFolder);
+            File.Move(FileName, destinationFile);
+
+            return true;
+        }
+        catch (Exception e) { Console.WriteLine(e); }
+        return false;
     }
 }
